@@ -4,6 +4,9 @@ import LayoutDashboard from "./layouts/LayoutDashboard";
 import Dashboard from "./pages/Dashboard";
 import Orders from "./pages/Orders";
 import Users from "./pages/Users";
+import About from "./pages/About";
+import LoginLayout from "./layouts/LoginLayout";
+import Login from "./pages/Login";
 
 // Define the router configuration in this file
 export const router = createBrowserRouter([
@@ -28,6 +31,10 @@ export const router = createBrowserRouter([
             element: <Users />,
           },
           {
+            path: "about",
+            element: <About />,
+          },
+          {
             path: "orders",
             element: <Orders />,
           },
@@ -41,13 +48,12 @@ export const router = createBrowserRouter([
               },
               {
                 path: "sales",
-                element: <Dashboard />, // This can be a sales page component if needed
+                element: <Orders />, // This can be a sales page component if needed
               },
               {
                 path: "traffic",
                 element: <Orders />, // Replace with actual traffic report component if needed
               },
-             
             ],
           },
           {
@@ -59,6 +65,20 @@ export const router = createBrowserRouter([
             element: <Orders />, // Replace with settings page if needed
           },
         ],
+      },
+      {
+        path: "login",
+        element: <LoginLayout />, // Default layout route
+        children: [
+          {
+            path: "", // Default path inside the layout (Dashboard)
+            element: <Login />,
+          },
+        ],
+      },
+      {
+        path: "logout",
+        element: <Login />,
       },
     ],
   },

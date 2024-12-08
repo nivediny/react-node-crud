@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   TextField,
   Button,
@@ -10,10 +10,6 @@ import {
   Checkbox,
   FormControlLabel,
   FormHelperText,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -36,17 +32,15 @@ function UserForm({ userToEdit, onSave, fields }) {
         if (field.type === "email") {
           acc[field.name] = Yup.string()
             .email("Invalid email")
-            .required("Please enter your email");
+            .required("This field is required");
         } else if (field.type === "number") {
           acc[field.name] = Yup.number()
             .typeError("Must be a number")
-            .required("Please enter your age");
+            .required("This field is required");
         } else if (field.type === "date") {
-          acc[field.name] = Yup.date().required(
-            "Please select your date of birth"
-          );
+          acc[field.name] = Yup.date().required("This field is required");
         } else if (field.type === "select") {
-          acc[field.name] = Yup.string().required("Please select gender");
+          acc[field.name] = Yup.string().required("This field is required");
         } else {
           acc[field.name] = Yup.string().required("This field is required");
         }
@@ -63,25 +57,12 @@ function UserForm({ userToEdit, onSave, fields }) {
     onSubmit: (values) => {
       const formattedValues = {
         ...values,
-        dob: values.dob
-          ? new Date(values.dob).toISOString().split("T")[0]
-          : null, // Ensure dob is formatted
+        dob: values.dob ? new Date(values.dob).toISOString() : null, // Ensure dob is formatted
       };
       if (userToEdit) {
         formattedValues.id = userToEdit.id;
       }
-      setOpenPopup(true);
-    
-      // Save the data
       onSave(formattedValues);
-
-      // Reset the form after submission
-      formik.resetForm();
-
-      // Optionally, close the popup after a slight delay
-      setTimeout(() => {
-        setOpenPopup(false);
-      }, 2000); // Close popup after 2 seconds
     },
   });
 
@@ -89,41 +70,16 @@ function UserForm({ userToEdit, onSave, fields }) {
     formik.setValues(initialValues); // Reset form when `userToEdit` changes
   }, [userToEdit]);
 
-  const [openPopup, setOpenPopup] = useState(false);
-
-  const handleClosePopup = () => {
-    setOpenPopup(false);
-  };
-
-  function ThankYouPopup({ open, onClose }) {
-    return (
-      <Dialog open={open} onClose={onClose}>
-        <DialogTitle>Thank You!</DialogTitle>
-        <DialogContent>
-          <p>Your form has been successfully submitted.</p>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  }
-
   return (
     <form onSubmit={formik.handleSubmit} noValidate>
       <Grid container spacing={2}>
-        <Grid item xs={12} size={12}>
-          <h2>{userToEdit ? "Edit" : "Add"} User</h2>
-        </Grid>
+        <h2>{userToEdit ? "Edit" : "Add"} User</h2>
         {fields.map((field) => {
           if (field.type === "date") {
             return (
-              <Grid item xs={12} key={field.name} size={12}>
+              <Grid item xs={12} key={field.name}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DatePicker
-                    fullWidth
                     label={field.label}
                     value={formik.values[field.name] || null}
                     onChange={(value) =>
@@ -150,9 +106,8 @@ function UserForm({ userToEdit, onSave, fields }) {
 
           if (field.type === "checkbox") {
             return (
-              <Grid item xs={12} key={field.name} size={12}>
+              <Grid item xs={12} key={field.name}>
                 <FormControlLabel
-                  fullWidth
                   control={
                     <Checkbox
                       checked={formik.values[field.name] || false}
@@ -168,7 +123,7 @@ function UserForm({ userToEdit, onSave, fields }) {
 
           if (field.type === "select") {
             return (
-              <Grid item xs={12} key={field.name} size={12}>
+              <Grid item xs={12} key={field.name}>
                 <FormControl
                   fullWidth
                   error={
@@ -198,7 +153,7 @@ function UserForm({ userToEdit, onSave, fields }) {
           }
 
           return (
-            <Grid item xs={12} key={field.name} size={12}>
+            <Grid item xs={12} key={field.name}>
               <TextField
                 label={field.label}
                 fullWidth
@@ -222,7 +177,6 @@ function UserForm({ userToEdit, onSave, fields }) {
           <Button type="submit" variant="contained" color="primary">
             {userToEdit ? "Update" : "Add"} User
           </Button>
-          <ThankYouPopup open={openPopup} onClose={handleClosePopup} />
         </Grid>
       </Grid>
     </form>

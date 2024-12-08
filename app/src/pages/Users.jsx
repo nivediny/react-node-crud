@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Drawer, Button, Box } from "@mui/material";
+import { Drawer, Button, Box, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { Add as AddIcon } from "@mui/icons-material";
 import UserList from "../components/Users/UserList";
 import UserForm from "../components/Users/UserForm";
@@ -9,6 +9,8 @@ function Users() {
   const [users, setUsers] = useState([]);
   const [userToEdit, setUserToEdit] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // State for delete dialog
+  const [userIdToDelete, setUserIdToDelete] = useState(null); // Store user ID for deletion
 
   const fields = [
     { name: "name", label: "Name", type: "text", required: true },
@@ -53,13 +55,26 @@ function Users() {
     }
   };
 
-  const handleDeleteUser = async (userId) => {
+  const handleDeleteUser = async () => {
     try {
-      await api.delete(`/users/${userId}`);
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+      if (userIdToDelete) {
+        await api.delete(`/users/${userIdToDelete}`);
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userIdToDelete));
+      }
+      setOpenDeleteDialog(false); // Close dialog after delete
     } catch (error) {
       console.error("Error deleting user:", error);
     }
+  };
+
+  const handleDeleteClick = (userId) => {
+    setUserIdToDelete(userId); // Store user ID to delete
+    setOpenDeleteDialog(true); // Open delete confirmation dialog
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false); // Close delete dialog without deleting
+    setUserIdToDelete(null); // Clear the stored user ID
   };
 
   const handleEditUser = (user) => {
@@ -111,14 +126,30 @@ function Users() {
       {/* User List */}
       <UserList
         users={users}
-        onDelete={handleDeleteUser}
+        onDelete={handleDeleteClick} // Use handleDeleteClick for delete button
         onEdit={handleEditUser}
         fields={fields}
       />
 
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Delete User</DialogTitle>
+        <DialogContent>
+          <p>Are you sure you want to delete this user?</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteUser} color="secondary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       {/* Drawer for adding or editing user */}
       <Drawer anchor="right" open={drawerOpen} onClose={handleCloseDrawer}>
-        <Box sx={{ width: 300, padding: 2, paddingTop: 10 }}>
+        <Box sx={{ width: 400, padding: 2, paddingTop: 10 }}>
           <UserForm
             userToEdit={userToEdit}
             onSave={handleSaveUser}
