@@ -71,7 +71,7 @@ function UserForm({ userToEdit, onSave, fields }) {
         formattedValues.id = userToEdit.id;
       }
       setOpenPopup(true);
-    
+
       // Save the data
       onSave(formattedValues);
 
@@ -162,6 +162,55 @@ function UserForm({ userToEdit, onSave, fields }) {
                   }
                   label={field.label}
                 />
+              </Grid>
+            );
+          }
+
+          if (field.type === "hobbies") {
+            return (
+              <Grid item xs={12} key={field.name} size={12}>
+                <InputLabel style={{ marginBottom: "8px" }}>
+                  {field.label}
+                </InputLabel>
+                <FormControl
+                  component="fieldset"
+                  style={{ width: "100%" }} // Ensure the field takes the full width
+                  error={
+                    formik.touched[field.name] &&
+                    Boolean(formik.errors[field.name])
+                  }
+                >
+                  <Grid container spacing={1}>
+                    {field.options.map((option) => (
+                      <Grid item xs={6} md={4} key={option}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={
+                                formik.values[field.name]?.includes(option) ||
+                                false
+                              }
+                              onChange={(event) => {
+                                const value = event.target.checked
+                                  ? [...formik.values[field.name], option]
+                                  : formik.values[field.name].filter(
+                                      (item) => item !== option
+                                    );
+
+                                formik.setFieldValue(field.name, value);
+                              }}
+                              name={field.name}
+                            />
+                          }
+                          label={option}
+                        />
+                      </Grid>
+                    ))}
+                  </Grid>
+                  <FormHelperText>
+                    {formik.touched[field.name] && formik.errors[field.name]}
+                  </FormHelperText>
+                </FormControl>
               </Grid>
             );
           }

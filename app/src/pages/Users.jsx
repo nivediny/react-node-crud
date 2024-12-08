@@ -29,7 +29,7 @@ function Users() {
     {
       name: "hobbies",
       label: "Hobbies",
-      type: "checkbox",
+      type: "hobbies",
       options: ["Reading", "Cooking", "Traveling", "Gaming"],
       required: false,
     },
