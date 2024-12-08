@@ -23,7 +23,7 @@ jobs:
       # Step 3: Install dependencies for React and Node API
       - name: Install dependencies for React app
         run: |
-          cd client
+          cd app
           npm install  # Use yarn if applicable
 
       - name: Install dependencies for Node API
