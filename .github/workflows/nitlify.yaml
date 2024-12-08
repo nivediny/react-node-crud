@@ -37,6 +37,12 @@ jobs:
           cd app
           npm run build  # Change if using yarn
 
+      # Debugging Step to check if the dist folder exists
+      - name: List files in the dist directory
+        run: |
+          cd dist
+          ls -la dist  # This will list the contents of the dist directory
+
       # Step 5: Deploy React App to Netlify
       - name: Deploy React app to Netlify
         env:
@@ -44,7 +50,7 @@ jobs:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
           cd app
-          npx netlify deploy --dir=build --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --prod
+          npx netlify deploy --dir=dist --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --prod
 
       # Step 6: Deploy Node API to Netlify
       - name: Deploy Node API to Netlify
