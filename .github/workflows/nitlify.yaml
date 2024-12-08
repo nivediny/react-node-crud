@@ -39,8 +39,7 @@ jobs:
 
       # Debugging Step to check if the dist folder exists
       - name: List files in the dist directory
-        run: |
-          cd dist
+        run: |         
           ls -la dist  # This will list the contents of the dist directory
 
       # Step 5: Deploy React App to Netlify
