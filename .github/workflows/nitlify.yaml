@@ -1,0 +1,56 @@
+name: Deploy to Netlify
+
+on:
+  push:
+    branches:
+      - main  # Change to your main branch (e.g., 'main', 'master')
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'  # Specify Node.js version, change as necessary
+
+      # Step 3: Install dependencies for React and Node API
+      - name: Install dependencies for React app
+        run: |
+          cd client
+          npm install  # Use yarn if applicable
+
+      - name: Install dependencies for Node API
+        run: |
+          cd api
+          npm install  # Use yarn if applicable
+
+      # Step 4: Build the React app
+      - name: Build React app
+        run: |
+          cd app
+          npm run build  # Change if using yarn
+
+      # Step 5: Deploy React App to Netlify
+      - name: Deploy React app to Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          cd app
+          npx netlify deploy --dir=build --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --prod
+
+      # Step 6: Deploy Node API to Netlify
+      - name: Deploy Node API to Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          cd api
+          npx netlify deploy --dir=functions --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN --prod
